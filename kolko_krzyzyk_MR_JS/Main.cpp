@@ -147,10 +147,10 @@ void mouse(int button, int state, int x, int y) {
       X_or_O(485, 485, 0, 2);
     }
 
-    /*int x1 = 120;
+    int x1 = 120;
     int y1 = 120;
 
-    for (int i = 0; i < 3; ++i)
+    /*for (int i = 0; i < 3; ++i)
     {
       
       y1 = 120;
