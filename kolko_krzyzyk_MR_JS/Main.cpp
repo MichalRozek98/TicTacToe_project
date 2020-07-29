@@ -214,7 +214,7 @@ void display(void)
 {
   DrawLines();
 
-  glEnd();
+  //glEnd();
   glFlush();
 }
 
