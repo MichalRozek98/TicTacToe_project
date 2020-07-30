@@ -17,16 +17,14 @@ int winner_looser_matrix[3][3];
 bool move = false;
 bool if_somebody_wins = false;
 
-void init(void)
-{
+void init(void) {
   glClearColor(1, 1, 0, 1);
   glClear(GL_COLOR_BUFFER_BIT);
   glHint(GL_PERSPECTIVE_CORRECTION_HINT, GL_NICEST);
   winner_looser_matrix[3][3] = { -1 - 1 - 1 - 1 - 1 - 1 - 1 - 1 - 1 };
 }
 
-void DrawLines()
-{
+void DrawLines() {
   glBegin(GL_LINES);
   glColor3f(0, 0, 0);
 
@@ -44,8 +42,7 @@ void DrawLines()
 }
 
 
-void Draw_O(int x, int y, int z = 60, int a = 0)
-{
+void Draw_O(int x, int y, int z = 60, int a = 0) {
   glPushMatrix();
   glTranslatef(x, y, z);
   glRotatef(a, 1, 0, 0);
@@ -54,8 +51,7 @@ void Draw_O(int x, int y, int z = 60, int a = 0)
 
 }
 
-void Draw_X(int x, int y)
-{
+void Draw_X(int x, int y) {
   glBegin(GL_LINES);
   glColor3f(0, 0, 0);
   glVertex2f(x - 50, y - 50);
@@ -65,24 +61,20 @@ void Draw_X(int x, int y)
   glEnd();
 }
 
-void X_or_O(int x, int y, int i, int j)
-{
-  if (!move)
-  {
+void X_or_O(int x, int y, int i, int j) {
+  if (!move) {
     Draw_X(x, y);
     winner_looser_matrix[i][j] = 2;
     move = true;
   }
-  else
-  {
+  else {
     Draw_O(x, y);
     winner_looser_matrix[i][j] = 1;
     move = false;
   }
 }
 
-void WhoIsTheWinner()
-{
+void WhoIsTheWinner() {
   int iterator_x_w = 0;
   int iterator_o_w = 0;
   int iterator_x_k = 0;
@@ -122,13 +114,11 @@ void WhoIsTheWinner()
       ++iterator_x_s;
     }
 
-    if (iterator_o_w == 3 ||   iterator_o_k == 3 || iterator_o_b == 3 ||  iterator_o_s == 3)
-    {
+    if (iterator_o_w == 3 ||   iterator_o_k == 3 || iterator_o_b == 3 ||  iterator_o_s == 3) {
       MessageBox(NULL, "Wygra³ Pan O - ale zaskoczenie", "Info", MB_OK);// | MB_ICONEXCLAMATION);
       break;
     }
-    else if (iterator_x_w == 3 || iterator_x_k == 3 || iterator_x_b == 3 ||  iterator_x_s == 3 )
-    {
+    else if (iterator_x_w == 3 || iterator_x_k == 3 || iterator_x_b == 3 ||  iterator_x_s == 3 ) {
       MessageBox(NULL, "Wygra³ Pan X - niemo¿liwe", "Info", MB_OK);// | MB_ICONEXCLAMATION);
       break;
     }
@@ -144,76 +134,60 @@ bool check;
 void mouse(int button, int state, int x, int y) {
   WhoIsTheWinner();
 
-  if (button == GLUT_LEFT_BUTTON && state == GLUT_DOWN)
-  {
+  if (button == GLUT_LEFT_BUTTON && state == GLUT_DOWN) {
     check = true;
-    if (x > 40 && (600 - y) > 40 && x < 200 && (600 - y) < 200)
-    {
+    if (x > 40 && (600 - y) > 40 && x < 200 && (600 - y) < 200) {
       X_or_O(115, 115, 2, 0);
     }
-    else if (x > 200 && (600 - y) > 40 && x < 400 && (600 - y) < 200)
-    {
+    else if (x > 200 && (600 - y) > 40 && x < 400 && (600 - y) < 200) {
       X_or_O(300, 115, 2, 1);
     }
-    else if (x > 400 && (600 - y) > 40 && x < 560 && (600 - y) < 200)
-    {
+    else if (x > 400 && (600 - y) > 40 && x < 560 && (600 - y) < 200) {
       X_or_O(485, 115, 2, 2);
     }
-    else if (x > 40 && (600 - y) > 200 && x < 200 && (600 - y) < 400)
-    {
+    else if (x > 40 && (600 - y) > 200 && x < 200 && (600 - y) < 400) {
       X_or_O(115, 300, 1, 0);
     }
-    else if (x > 200 && (600 - y) > 200 && x < 400 && (600 - y) < 400)
-    {
+    else if (x > 200 && (600 - y) > 200 && x < 400 && (600 - y) < 400) {
       X_or_O(300, 300, 1, 1);
     }
-    else if (x > 400 && (600 - y) > 200 && x < 560 && (600 - y) < 400)
-    {
+    else if (x > 400 && (600 - y) > 200 && x < 560 && (600 - y) < 400) {
       X_or_O(485, 300, 1, 2);
     }
-    else if (x > 40 && (600 - y) > 400 && x < 200 && (600 - y) < 560)
-    {
+    else if (x > 40 && (600 - y) > 400 && x < 200 && (600 - y) < 560) {
       X_or_O(115, 485, 0, 0);
     }
-    else if (x > 200 && (600 - y) > 400 && x < 400 && (600 - y) < 560)
-    {
+    else if (x > 200 && (600 - y) > 400 && x < 400 && (600 - y) < 560) {
       X_or_O(300, 485, 0, 1);
     }
-    else if (x > 400 && (600 - y) > 400 && x < 560 && (600 - y) < 560)
-    {
+    else if (x > 400 && (600 - y) > 400 && x < 560 && (600 - y) < 560) {
       X_or_O(485, 485, 0, 2);
     }
 
     /*int x1 = 120;
     int y1 = 120;
 
-    for (int i = 0; i < 3; ++i)
-    {
+    for (int i = 0; i < 3; ++i) {
 
       y1 = 120;
-      for (int j = 0; j < 3; ++j)
-      {
+      for (int j = 0; j < 3; ++j) {
         y1 += 180;
-        if (i % 3 == 0 && j % 3 == 0)
-        {
+        if (i % 3 == 0 && j % 3 == 0) {
           //x1 = 115; y1 = 115;
           Draw_X(x1,y1);
         }
-        else if (i % 3 == 1 && j % 3 == 1)
-        {
+        else if (i % 3 == 1 && j % 3 == 1) {
           //x1 = 300; y1 = 300;
           Draw_X(x1, y1);
         }
-        else if (i % 3 == 2 && j % 3 == 2)
-        {
+        else if (i % 3 == 2 && j % 3 == 2) {
           //x1 = 485; y1 = 485;
           Draw_X(x1, y1);
         }
       }
       x1 += 180;*/
   }
-  else if (button == GLUT_RIGHT_BUTTON && state == GLUT_DOWN)
-  {
+  else if (button == GLUT_RIGHT_BUTTON && state == GLUT_DOWN) {
     glClearColor(1, 1, 0, 0);
     glClear(GL_COLOR_BUFFER_BIT);
     check = false;
@@ -222,17 +196,14 @@ void mouse(int button, int state, int x, int y) {
   glutPostRedisplay();
 }
 
-void display(void)
-{
+void display(void) {
   DrawLines();
   //glEnd();
   
   glFlush();
-
 }
 
-void resize(int w, int h)
-{
+void resize(int w, int h) {
   glViewport(0, 0, (GLsizei)w, (GLsizei)h);
   glMatrixMode(GL_PROJECTION);
   glLoadIdentity();
@@ -240,10 +211,6 @@ void resize(int w, int h)
   glMatrixMode(GL_MODELVIEW);
   glLoadIdentity();
 }
-
-
-
-
 
 
 int main(int argc, char** argv) {
