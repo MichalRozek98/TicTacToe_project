@@ -1,83 +1,53 @@
-
-// BadproG.com
 #include <iostream>
 #include <math.h>
 #include <stdlib.h>
-#include <GL\glew.h>
-#include <GL\freeglut.h>
+#include "DrawObjects.h"
+#include "Connection.h"
 
-/**
-* glVertex2f(float x, float y).
-* The point (0.0, 0.0) represents the middle of the window (not the top left corner).
-* The "2f" suffix means 2 values of float type (x and y).
-*/
 
 #define PI 3.14159f
 int winner_looser_matrix[3][3];
 bool move = false;
-bool if_somebody_wins = false;
+bool somebody_wins = false;
+Draw* draw = new Draw();
 
 void init(void)
 {
   glClearColor(1, 1, 0, 1);
   glClear(GL_COLOR_BUFFER_BIT);
   glHint(GL_PERSPECTIVE_CORRECTION_HINT, GL_NICEST);
-  winner_looser_matrix[3][3] = { -1 - 1 - 1 - 1 - 1 - 1 - 1 - 1 - 1 };
+  move = false;
+  somebody_wins = false;
+
+  for (int i = 0; i < 3; ++i)
+  {
+    for (int j = 0; j < 3; ++j)
+    {
+      winner_looser_matrix[i][j] = -1;
+    }
+  }
 }
 
-void DrawLines()
-{
-  glBegin(GL_LINES);
-  glColor3f(0, 0, 0);
-
-  glVertex2f(210, 30);
-  glVertex2f(210, 570);
-  glVertex2f(390, 30);
-  glVertex2f(390, 570);
-
-  glVertex2f(30, 210);
-  glVertex2f(570, 210);
-  glVertex2f(30, 390);
-  glVertex2f(570, 390);
-
-  glEnd();
-}
-
-
-void Draw_O(int x, int y, int z = 60, int a = 0)
-{
-  glPushMatrix();
-  glTranslatef(x, y, z);
-  glRotatef(a, 1, 0, 0);
-  glutSolidTorus(60.0, 60.5, 16, 16);
-  glPopMatrix();
-
-}
-
-void Draw_X(int x, int y)
-{
-  glBegin(GL_LINES);
-  glColor3f(0, 0, 0);
-  glVertex2f(x - 50, y - 50);
-  glVertex2f(x + 50, y + 50);
-  glVertex2f(x - 50, y + 50);
-  glVertex2f(x + 50, y - 50);
-  glEnd();
-}
 
 void X_or_O(int x, int y, int i, int j)
 {
   if (!move)
   {
-    Draw_X(x, y);
-    winner_looser_matrix[i][j] = 2;
-    move = true;
+    if (winner_looser_matrix[i][j] == -1)
+    {
+      draw->Draw_X(x, y);
+      winner_looser_matrix[i][j] = 2;
+      move = true;
+    }
   }
   else
   {
-    Draw_O(x, y);
-    winner_looser_matrix[i][j] = 1;
-    move = false;
+    if (winner_looser_matrix[i][j] == -1)
+    {
+      draw->Draw_O(x, y);
+      winner_looser_matrix[i][j] = 1;
+      move = false;
+    }
   }
 }
 
@@ -92,6 +62,7 @@ void WhoIsTheWinner()
   int iterator_x_s = 0;
   int iterator_o_s = 0;
   int iterator_move = 0;
+  int if_empty_matrix = 0;
 
   for (int i = 0; i < 3; ++i) {
     for (int j = 0; j < 3; ++j) {
@@ -124,20 +95,41 @@ void WhoIsTheWinner()
 
     if (iterator_o_w == 3 || iterator_o_k == 3 || iterator_o_b == 3 || iterator_o_s == 3)
     {
-      MessageBox(NULL, "Wygra³ Pan O - ale zaskoczenie", "Info", MB_OK);// | MB_ICONEXCLAMATION);
+      draw->DrawString(GLUT_BITMAP_HELVETICA_18, "Mr. O wins", 430, 580);
+      somebody_wins = true;
       break;
     }
     else if (iterator_x_w == 3 || iterator_x_k == 3 || iterator_x_b == 3 || iterator_x_s == 3)
     {
-      MessageBox(NULL, "Wygra³ Pan X - niemo¿liwe", "Info", MB_OK);// | MB_ICONEXCLAMATION);
+      draw->DrawString(GLUT_BITMAP_HELVETICA_18, "Mr. X wins", 430, 580);
+      somebody_wins = true;
       break;
     }
-
     iterator_o_w = 0;
     iterator_x_w = 0;
-    iterator_x_k = 0;
+    iterator_x_k = 0;  
     iterator_o_k = 0;
   }
+
+  if (!somebody_wins)
+  {
+    for (int i = 0; i < 3; i++)
+    {
+      for (int j = 0; j < 3; j++)
+      {
+        if (winner_looser_matrix[i][j] == 1 || winner_looser_matrix[i][j] == 2)
+        {
+          ++if_empty_matrix;
+        }
+      }
+    }
+
+    if (if_empty_matrix == 9)
+    {
+      draw->DrawString(GLUT_BITMAP_HELVETICA_18, "Draw", 450, 580);
+    }
+  }
+
 }
 
 bool check;
@@ -183,6 +175,13 @@ void mouse(int button, int state, int x, int y) {
     {
       X_or_O(485, 485, 0, 2);
     }
+    else if (x > 255 && (600 - y) > 580 && x < 345 && (600 - y) < 600)
+    {
+      init();
+      glClearColor(1, 1, 0, 0);
+      glClear(GL_COLOR_BUFFER_BIT);
+      check = false;
+    }
 
     /*int x1 = 120;
     int y1 = 120;
@@ -212,23 +211,19 @@ void mouse(int button, int state, int x, int y) {
       }
       x1 += 180;*/
   }
-  else if (button == GLUT_RIGHT_BUTTON && state == GLUT_DOWN)
-  {
-    glClearColor(1, 1, 0, 0);
-    glClear(GL_COLOR_BUFFER_BIT);
-    check = false;
-  }
 
   glutPostRedisplay();
 }
 
+
 void display(void)
 {
-  DrawLines();
+  draw->DrawLines();
+  draw->DrawString(GLUT_BITMAP_HELVETICA_18, "Mr. X starts", 5, 580);
+  draw->DrawString(GLUT_BITMAP_HELVETICA_18, "Play again", 258, 580);
 
   //glEnd();
   glFlush();
-
 }
 
 void resize(int w, int h)
@@ -242,10 +237,6 @@ void resize(int w, int h)
 }
 
 
-
-
-
-
 int main(int argc, char** argv) {
   glutInit(&argc, argv);
   //glutInitDisplayMode(GLUT_DOUBLE | GLUT_RGB | GLUT_DEPTH);
@@ -257,7 +248,6 @@ int main(int argc, char** argv) {
   glutReshapeFunc(resize);
   glutMouseFunc(mouse);
   glutMainLoop();
-
 
   return 0;
 }
