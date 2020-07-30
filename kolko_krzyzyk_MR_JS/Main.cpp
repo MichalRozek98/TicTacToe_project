@@ -15,6 +15,7 @@
 #define PI 3.14159f
 int winner_looser_matrix[3][3];
 bool move = false;
+bool if_somebody_wins = false;
 
 void init(void)
 {
@@ -57,11 +58,11 @@ void Draw_X(int x, int y)
 {
   glBegin(GL_LINES);
   glColor3f(0, 0, 0);
-    glVertex2f(x - 50, y - 50);
-    glVertex2f(x + 50, y + 50);
-    glVertex2f(x - 50, y + 50);
-    glVertex2f(x + 50, y - 50);
-    glEnd();
+  glVertex2f(x - 50, y - 50);
+  glVertex2f(x + 50, y + 50);
+  glVertex2f(x - 50, y + 50);
+  glVertex2f(x + 50, y - 50);
+  glEnd();
 }
 
 void X_or_O(int x, int y, int i, int j)
@@ -69,43 +70,79 @@ void X_or_O(int x, int y, int i, int j)
   if (!move)
   {
     Draw_X(x, y);
-    winner_looser_matrix[i][j] = 1;
+    winner_looser_matrix[i][j] = 2;
+    move = true;
   }
   else
   {
     Draw_O(x, y);
-    winner_looser_matrix[i][j] = 0;
+    winner_looser_matrix[i][j] = 1;
+    move = false;
   }
 }
 
 void WhoIsTheWinner()
 {
-  int iterator_x = 0;
-  int iterator_o = 0;
+  int iterator_x_w = 0;
+  int iterator_o_w = 0;
+  int iterator_x_k = 0;
+  int iterator_o_k = 0;
+  int iterator_x_b = 0;
+  int iterator_o_b = 0;
+  int iterator_x_s = 0;
+  int iterator_o_s = 0;
+  int iterator_move = 0;
 
-  for (int i = 0; i < 3; ++i)
-  {
-    for (int j = 0; j < 3; ++j)
-    {
-      if (winner_looser_matrix[i][j] % 2 == 0)
-      {
-        ++iterator_o;
+  for (int i = 0; i < 3; ++i) {
+    for (int j = 0; j < 3; ++j) {
+      if (winner_looser_matrix[i][j] == 1) {
+        ++iterator_o_w;
       }
-      else
-      {
-        ++iterator_x;
+      else if (winner_looser_matrix[i][j] == 2) {
+        ++iterator_x_w;
       }
+      if (winner_looser_matrix[j][i] == 1) {
+        ++iterator_o_k;
+      }
+      else if (winner_looser_matrix[j][i] == 2) {
+        ++iterator_x_k;
+      }
+      ++iterator_move;
     }
-    if (iterator_o == 3 || iterator_x == 3)
-      break;
+    if (winner_looser_matrix[i][i] == 1) {
+      ++iterator_o_b;
+    }
+    else if (winner_looser_matrix[i][i] == 2) {
+      ++iterator_x_b;
+    }
+    if (winner_looser_matrix[i][2 - i] == 1) {
+      ++iterator_o_s;
+    }
+    else if (winner_looser_matrix[i][2 - i] == 2) {
+      ++iterator_x_s;
+    }
 
-    iterator_o = 0;
-    iterator_x = 0;
+    if (iterator_o_w == 3 || iterator_o_k == 3 || iterator_o_b == 3 || iterator_o_s == 3)
+    {
+      MessageBox(NULL, "Wygra³ Pan O - ale zaskoczenie", "Info", MB_OK);// | MB_ICONEXCLAMATION);
+      break;
+    }
+    else if (iterator_x_w == 3 || iterator_x_k == 3 || iterator_x_b == 3 || iterator_x_s == 3)
+    {
+      MessageBox(NULL, "Wygra³ Pan X - niemo¿liwe", "Info", MB_OK);// | MB_ICONEXCLAMATION);
+      break;
+    }
+
+    iterator_o_w = 0;
+    iterator_x_w = 0;
+    iterator_x_k = 0;
+    iterator_o_k = 0;
   }
 }
 
 bool check;
 void mouse(int button, int state, int x, int y) {
+  WhoIsTheWinner();
 
   if (button == GLUT_LEFT_BUTTON && state == GLUT_DOWN)
   {
@@ -147,12 +184,12 @@ void mouse(int button, int state, int x, int y) {
       X_or_O(485, 485, 0, 2);
     }
 
-    int x1 = 120;
+    /*int x1 = 120;
     int y1 = 120;
 
-    /*for (int i = 0; i < 3; ++i)
+    for (int i = 0; i < 3; ++i)
     {
-      
+
       y1 = 120;
       for (int j = 0; j < 3; ++j)
       {
@@ -174,7 +211,7 @@ void mouse(int button, int state, int x, int y) {
         }
       }
       x1 += 180;*/
-    }
+  }
   else if (button == GLUT_RIGHT_BUTTON && state == GLUT_DOWN)
   {
     glClearColor(1, 1, 0, 0);
@@ -189,8 +226,9 @@ void display(void)
 {
   DrawLines();
 
-  glEnd();
+  //glEnd();
   glFlush();
+
 }
 
 void resize(int w, int h)
