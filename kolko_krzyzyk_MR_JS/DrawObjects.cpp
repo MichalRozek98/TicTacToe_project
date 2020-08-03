@@ -1,9 +1,8 @@
 #include "DrawObjects.h"
 
-Draw::Draw()
+/*Draw::Draw()
 {
-}
-
+}*/
 
 
 void Draw::DrawString(void* font, const char s[], float x, float y)

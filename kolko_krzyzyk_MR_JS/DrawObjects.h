@@ -5,7 +5,7 @@
 class Draw
 {
 public:
-  Draw();
+  Draw() {}
 
   void DrawString(void* font, const char s[], float x, float y);
   void Draw_O(int x, int y, int z = 60, int a = 0);
