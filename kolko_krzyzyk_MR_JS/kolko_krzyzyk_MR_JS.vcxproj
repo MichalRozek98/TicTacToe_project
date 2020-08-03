@@ -138,7 +138,6 @@
     <ClInclude Include="Game.h" />
     <ClInclude Include="resource.h" />
     <ClInclude Include="TCP.h" />
-    <ClInclude Include="UDP.h" />
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="kolko_krzyzyk_MR_JS.rc" />
