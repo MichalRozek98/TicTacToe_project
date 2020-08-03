@@ -2,6 +2,11 @@
 #include <SFML/Network.hpp>
 #include <iostream>
 
+void runTcpServer(unsigned short port);
+void runTcpClient(unsigned short port);
+void runUdpServer(unsigned short port);
+void runUdpClient(unsigned short port);
+
 const unsigned short PORT = 5000;
 const std::string IPADDRESS("192.168.0.100");//change to suit your needs
 
