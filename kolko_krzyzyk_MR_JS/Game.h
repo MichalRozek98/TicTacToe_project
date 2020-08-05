@@ -3,13 +3,16 @@
 #include <math.h>
 #include <stdlib.h>
 #include "DrawObjects.h"
-#include "Connection.h"
+#include <SFML/Network.hpp>
+#include <iostream>
+#include "TCP.h"
 
 #define PI 3.14159f
 int winner_looser_matrix[3][3];
 bool move = false;
 bool somebody_wins = false;
 Draw* draw = new Draw();
+
 
 void init(void)
 {
@@ -49,6 +52,55 @@ void X_or_O(int x, int y, int i, int j)
       move = false;
     }
   }
+}
+
+void SendTheMatrix()
+{
+  if (who == 's')
+  {
+    if (Socket_server.send(winner_looser_matrix, sizeof(winner_looser_matrix)) != sf::Socket::Done)
+      return;
+  }
+  else
+  {
+    if (Socket_client.send(winner_looser_matrix, sizeof(winner_looser_matrix)) != sf::Socket::Done)
+      return;
+  }
+}
+
+void ReceiveTheMatix()
+{
+  int winner_looser_matrix_copy[3][3];// = winner_looser_matrix;
+  for (int i = 0; i < 3; ++i)
+  {
+    for (int j = 0; j < 3; ++j)
+    {
+      winner_looser_matrix_copy[i][j] = winner_looser_matrix[i][j];
+    }
+  }
+
+  if (who == 's')
+  {
+    if (Socket_server.receive(winner_looser_matrix, sizeof(winner_looser_matrix), received_server) != sf::Socket::Done)
+      return;
+  }
+  else
+  {
+    if (Socket_client.receive(winner_looser_matrix, sizeof(winner_looser_matrix), received_client) != sf::Socket::Done)
+      return;
+  }
+
+  for (int i = 0; i < 3; ++i)
+  {
+    for (int j = 0; j < 3; ++j)
+    {
+      if (winner_looser_matrix_copy[i][j] != winner_looser_matrix[i][j])
+      {
+        X_or_O(115,115,i,j);
+      }
+    }
+  }
+
 }
 
 void WhoIsTheWinner()
@@ -142,38 +194,47 @@ void mouse(int button, int state, int x, int y) {
     if (x > 40 && (600 - y) > 40 && x < 200 && (600 - y) < 200)
     {
       X_or_O(115, 115, 2, 0);
+      SendTheMatrix();
     }
     else if (x > 200 && (600 - y) > 40 && x < 400 && (600 - y) < 200)
     {
       X_or_O(300, 115, 2, 1);
+      SendTheMatrix();
     }
     else if (x > 400 && (600 - y) > 40 && x < 560 && (600 - y) < 200)
     {
       X_or_O(485, 115, 2, 2);
+      SendTheMatrix();
     }
     else if (x > 40 && (600 - y) > 200 && x < 200 && (600 - y) < 400)
     {
       X_or_O(115, 300, 1, 0);
+      SendTheMatrix();
     }
     else if (x > 200 && (600 - y) > 200 && x < 400 && (600 - y) < 400)
     {
       X_or_O(300, 300, 1, 1);
+      SendTheMatrix();
     }
     else if (x > 400 && (600 - y) > 200 && x < 560 && (600 - y) < 400)
     {
       X_or_O(485, 300, 1, 2);
+      SendTheMatrix();
     }
     else if (x > 40 && (600 - y) > 400 && x < 200 && (600 - y) < 560)
     {
       X_or_O(115, 485, 0, 0);
+      SendTheMatrix();
     }
     else if (x > 200 && (600 - y) > 400 && x < 400 && (600 - y) < 560)
     {
       X_or_O(300, 485, 0, 1);
+      SendTheMatrix();
     }
     else if (x > 400 && (600 - y) > 400 && x < 560 && (600 - y) < 560)
     {
       X_or_O(485, 485, 0, 2);
+      SendTheMatrix();
     }
     else if (x > 255 && (600 - y) > 580 && x < 345 && (600 - y) < 600)
     {
@@ -181,6 +242,15 @@ void mouse(int button, int state, int x, int y) {
       glClearColor(1, 1, 0, 0);
       glClear(GL_COLOR_BUFFER_BIT);
       check = false;
+      /*if (who == 's')
+      {
+
+      }
+      else
+      {
+
+      }
+      */
     }
 
     /*int x1 = 120;
@@ -219,6 +289,7 @@ void mouse(int button, int state, int x, int y) {
 void display(void)
 {
   draw->DrawLines();
+  ReceiveTheMatix();
   draw->DrawString(GLUT_BITMAP_HELVETICA_18, "Mr. X starts", 5, 580);
   draw->DrawString(GLUT_BITMAP_HELVETICA_18, "Play again", 258, 580);
 
