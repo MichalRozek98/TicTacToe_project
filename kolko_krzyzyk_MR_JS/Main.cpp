@@ -27,6 +27,7 @@ int main(int argc, char** argv) {
   glutReshapeFunc(resize);
   glutMouseFunc(mouse);
   glutMainLoop();
-
+  
+  //ReceiveTheMatix();
   return 0;
 }

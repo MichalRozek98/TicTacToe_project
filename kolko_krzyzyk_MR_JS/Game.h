@@ -9,10 +9,12 @@
 
 #define PI 3.14159f
 int winner_looser_matrix[3][3];
+int matrix_help[3][3];
+int x_label[3];
+int y_label[3];
 bool move = false;
 bool somebody_wins = false;
 Draw* draw = new Draw();
-
 
 void init(void)
 {
@@ -27,18 +29,33 @@ void init(void)
     for (int j = 0; j < 3; ++j)
     {
       winner_looser_matrix[i][j] = -1;
+      matrix_help[i][j] = -1;
     }
+  }
+
+  int value = 115;
+
+  for (int i = 0; i < 3; ++i)
+  {
+    x_label[i] = value;
+    value += 185;
+  }
+  value -= 185;
+  for (int i = 0; i < 3; ++i)
+  {
+    y_label[i] = value;
+    value -= 185;
   }
 }
 
 
-void X_or_O(int x, int y, int i, int j)
+void X_or_O(int i, int j)
 {
-  if (!move)
+  if (who == 's')
   {
     if (winner_looser_matrix[i][j] == -1)
     {
-      draw->Draw_X(x, y);
+      draw->Draw_X(x_label[j], y_label[i]);
       winner_looser_matrix[i][j] = 2;
       move = true;
     }
@@ -47,7 +64,7 @@ void X_or_O(int x, int y, int i, int j)
   {
     if (winner_looser_matrix[i][j] == -1)
     {
-      draw->Draw_O(x, y);
+      draw->Draw_O(x_label[j], y_label[i]);
       winner_looser_matrix[i][j] = 1;
       move = false;
     }
@@ -58,35 +75,35 @@ void SendTheMatrix()
 {
   if (who == 's')
   {
-    if (Socket_server.send(winner_looser_matrix, sizeof(winner_looser_matrix)) != sf::Socket::Done)
+    if (socket.send(winner_looser_matrix, sizeof(winner_looser_matrix)) != sf::Socket::Done)
       return;
   }
   else
   {
-    if (Socket_client.send(winner_looser_matrix, sizeof(winner_looser_matrix)) != sf::Socket::Done)
+    if (socket.send(winner_looser_matrix, sizeof(winner_looser_matrix)) != sf::Socket::Done)
       return;
   }
 }
 
 void ReceiveTheMatix()
 {
-  int winner_looser_matrix_copy[3][3];// = winner_looser_matrix;
+  /*int winner_looser_matrix_copy[3][3];// = winner_looser_matrix;
   for (int i = 0; i < 3; ++i)
   {
     for (int j = 0; j < 3; ++j)
     {
       winner_looser_matrix_copy[i][j] = winner_looser_matrix[i][j];
     }
-  }
+  }*/
 
   if (who == 's')
   {
-    if (Socket_server.receive(winner_looser_matrix, sizeof(winner_looser_matrix), received_server) != sf::Socket::Done)
+    if (socket.receive(matrix_help, sizeof(matrix_help), received_server) != sf::Socket::Done)
       return;
   }
   else
   {
-    if (Socket_client.receive(winner_looser_matrix, sizeof(winner_looser_matrix), received_client) != sf::Socket::Done)
+    if (socket.receive(matrix_help, sizeof(matrix_help), received_client) != sf::Socket::Done)
       return;
   }
 
@@ -94,12 +111,36 @@ void ReceiveTheMatix()
   {
     for (int j = 0; j < 3; ++j)
     {
-      if (winner_looser_matrix_copy[i][j] != winner_looser_matrix[i][j])
+      if (matrix_help[i][j] != winner_looser_matrix[i][j] && winner_looser_matrix[i][j] == -1)
       {
-        X_or_O(115,115,i,j);
+        winner_looser_matrix[i][j] = matrix_help[i][j];
+
+        if (winner_looser_matrix[i][j] == 1)
+        {
+          draw->Draw_O(x_label[j], y_label[i]);
+        }
+        else if (winner_looser_matrix[i][j] == 2)
+        {
+          draw->Draw_X(x_label[j], y_label[i]);
+        }
       }
     }
   }
+
+
+  /*-1 -1 2
+    -1 2 -1*/
+
+    /*for (int i = 0; i < 3; ++i)
+    {
+      for (int j = 0; j < 3; ++j)
+      {
+        if (winner_looser_matrix_copy[i][j] != winner_looser_matrix[i][j])
+        {
+          X_or_O(115,115,i,j);
+        }
+      }
+    }*/
 
 }
 
@@ -193,48 +234,39 @@ void mouse(int button, int state, int x, int y) {
     check = true;
     if (x > 40 && (600 - y) > 40 && x < 200 && (600 - y) < 200)
     {
-      X_or_O(115, 115, 2, 0);
-      SendTheMatrix();
+      X_or_O(2, 0);
     }
     else if (x > 200 && (600 - y) > 40 && x < 400 && (600 - y) < 200)
     {
-      X_or_O(300, 115, 2, 1);
-      SendTheMatrix();
+      X_or_O(2, 1);
     }
     else if (x > 400 && (600 - y) > 40 && x < 560 && (600 - y) < 200)
     {
-      X_or_O(485, 115, 2, 2);
-      SendTheMatrix();
+      X_or_O(2, 2);
     }
     else if (x > 40 && (600 - y) > 200 && x < 200 && (600 - y) < 400)
     {
-      X_or_O(115, 300, 1, 0);
-      SendTheMatrix();
+      X_or_O(1, 0);
     }
     else if (x > 200 && (600 - y) > 200 && x < 400 && (600 - y) < 400)
     {
-      X_or_O(300, 300, 1, 1);
-      SendTheMatrix();
+      X_or_O(1, 1);
     }
     else if (x > 400 && (600 - y) > 200 && x < 560 && (600 - y) < 400)
     {
-      X_or_O(485, 300, 1, 2);
-      SendTheMatrix();
+      X_or_O(1, 2);
     }
     else if (x > 40 && (600 - y) > 400 && x < 200 && (600 - y) < 560)
     {
-      X_or_O(115, 485, 0, 0);
-      SendTheMatrix();
+      X_or_O(0, 0);
     }
     else if (x > 200 && (600 - y) > 400 && x < 400 && (600 - y) < 560)
     {
-      X_or_O(300, 485, 0, 1);
-      SendTheMatrix();
+      X_or_O(0, 1);
     }
     else if (x > 400 && (600 - y) > 400 && x < 560 && (600 - y) < 560)
     {
-      X_or_O(485, 485, 0, 2);
-      SendTheMatrix();
+      X_or_O(0, 2);
     }
     else if (x > 255 && (600 - y) > 580 && x < 345 && (600 - y) < 600)
     {
@@ -242,46 +274,11 @@ void mouse(int button, int state, int x, int y) {
       glClearColor(1, 1, 0, 0);
       glClear(GL_COLOR_BUFFER_BIT);
       check = false;
-      /*if (who == 's')
-      {
-
-      }
-      else
-      {
-
-      }
-      */
     }
-
-    /*int x1 = 120;
-    int y1 = 120;
-
-    for (int i = 0; i < 3; ++i)
-    {
-
-      y1 = 120;
-      for (int j = 0; j < 3; ++j)
-      {
-        y1 += 180;
-        if (i % 3 == 0 && j % 3 == 0)
-        {
-          //x1 = 115; y1 = 115;
-          Draw_X(x1,y1);
-        }
-        else if (i % 3 == 1 && j % 3 == 1)
-        {
-          //x1 = 300; y1 = 300;
-          Draw_X(x1, y1);
-        }
-        else if (i % 3 == 2 && j % 3 == 2)
-        {
-          //x1 = 485; y1 = 485;
-          Draw_X(x1, y1);
-        }
-      }
-      x1 += 180;*/
   }
-
+  glFlush();
+  SendTheMatrix();
+  ReceiveTheMatix();
   glutPostRedisplay();
 }
 
@@ -289,7 +286,6 @@ void mouse(int button, int state, int x, int y) {
 void display(void)
 {
   draw->DrawLines();
-  ReceiveTheMatix();
   draw->DrawString(GLUT_BITMAP_HELVETICA_18, "Mr. X starts", 5, 580);
   draw->DrawString(GLUT_BITMAP_HELVETICA_18, "Play again", 258, 580);
 

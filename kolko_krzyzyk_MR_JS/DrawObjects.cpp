@@ -28,6 +28,7 @@ void Draw::Draw_X(int x, int y)
 {
   glBegin(GL_LINES);
   glColor3f(0, 0, 0);
+  glLineWidth(7.0);
   glVertex2f(x - 50, y - 50);
   glVertex2f(x + 50, y + 50);
   glVertex2f(x - 50, y + 50);
