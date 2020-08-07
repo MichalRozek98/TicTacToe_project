@@ -15,38 +15,10 @@ int y_label[3];
 bool move = false;
 bool somebody_wins = false;
 Draw* draw = new Draw();
+bool first_receive = false;
+bool if_is_draw = false;
 
-void init(void)
-{
-  glClearColor(1, 1, 0, 1);
-  glClear(GL_COLOR_BUFFER_BIT);
-  glHint(GL_PERSPECTIVE_CORRECTION_HINT, GL_NICEST);
-  move = false;
-  somebody_wins = false;
 
-  for (int i = 0; i < 3; ++i)
-  {
-    for (int j = 0; j < 3; ++j)
-    {
-      winner_looser_matrix[i][j] = -1;
-      matrix_help[i][j] = -1;
-    }
-  }
-
-  int value = 115;
-
-  for (int i = 0; i < 3; ++i)
-  {
-    x_label[i] = value;
-    value += 185;
-  }
-  value -= 185;
-  for (int i = 0; i < 3; ++i)
-  {
-    y_label[i] = value;
-    value -= 185;
-  }
-}
 
 
 void X_or_O(int i, int j)
@@ -98,13 +70,15 @@ void ReceiveTheMatix()
 
   if (who == 's')
   {
-    if (socket.receive(matrix_help, sizeof(matrix_help), received_server) != sf::Socket::Done)
-      return;
+    /*if (socket.receive(matrix_help, sizeof(matrix_help), received_server) != sf::Socket::Done)
+      return;*/
+    socket.receive(matrix_help, sizeof(matrix_help), received_server);
   }
   else
   {
-    if (socket.receive(matrix_help, sizeof(matrix_help), received_client) != sf::Socket::Done)
-      return;
+    /*if (socket.receive(matrix_help, sizeof(matrix_help), received_client) != sf::Socket::Done)
+      return;*/
+    socket.receive(matrix_help, sizeof(matrix_help), received_client);
   }
 
   for (int i = 0; i < 3; ++i)
@@ -127,21 +101,40 @@ void ReceiveTheMatix()
     }
   }
 
+}
 
-  /*-1 -1 2
-    -1 2 -1*/
+void init(void)
+{
+  glClearColor(1, 1, 0, 1);
+  glClear(GL_COLOR_BUFFER_BIT);
+  glHint(GL_PERSPECTIVE_CORRECTION_HINT, GL_NICEST);
+  move = false;
+  somebody_wins = false;
 
-    /*for (int i = 0; i < 3; ++i)
+  for (int i = 0; i < 3; ++i)
+  {
+    for (int j = 0; j < 3; ++j)
     {
-      for (int j = 0; j < 3; ++j)
-      {
-        if (winner_looser_matrix_copy[i][j] != winner_looser_matrix[i][j])
-        {
-          X_or_O(115,115,i,j);
-        }
-      }
-    }*/
+      winner_looser_matrix[i][j] = -1;
+      matrix_help[i][j] = -1;
+    }
+  }
 
+  int value = 115;
+
+  for (int i = 0; i < 3; ++i)
+  {
+    x_label[i] = value;
+    value += 185;
+  }
+  value -= 185;
+  for (int i = 0; i < 3; ++i)
+  {
+    y_label[i] = value;
+    value -= 185;
+  }
+  first_receive = false;
+  if_is_draw = false;
 }
 
 void WhoIsTheWinner()
@@ -220,6 +213,7 @@ void WhoIsTheWinner()
     if (if_empty_matrix == 9)
     {
       draw->DrawString(GLUT_BITMAP_HELVETICA_18, "Draw", 450, 580);
+      if_is_draw = true;
     }
   }
 
@@ -227,7 +221,7 @@ void WhoIsTheWinner()
 
 bool check;
 void mouse(int button, int state, int x, int y) {
-  WhoIsTheWinner();
+
 
   if (button == GLUT_LEFT_BUTTON && state == GLUT_DOWN)
   {
@@ -278,7 +272,10 @@ void mouse(int button, int state, int x, int y) {
   }
   glFlush();
   SendTheMatrix();
-  ReceiveTheMatix();
+  WhoIsTheWinner();
+  if (!somebody_wins && !if_is_draw)
+    ReceiveTheMatix();
+  WhoIsTheWinner();
   glutPostRedisplay();
 }
 
@@ -288,9 +285,15 @@ void display(void)
   draw->DrawLines();
   draw->DrawString(GLUT_BITMAP_HELVETICA_18, "Mr. X starts", 5, 580);
   draw->DrawString(GLUT_BITMAP_HELVETICA_18, "Play again", 258, 580);
-
+  glFlush();
+  if (who == 'c' && !first_receive)
+  {
+    first_receive = true;
+    ReceiveTheMatix();
+  }
   //glEnd();
   glFlush();
+
 }
 
 void resize(int w, int h)

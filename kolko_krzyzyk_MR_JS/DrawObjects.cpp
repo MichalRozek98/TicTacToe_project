@@ -26,9 +26,9 @@ void Draw::Draw_O(int x, int y, int z, int a)
 
 void Draw::Draw_X(int x, int y)
 {
+  glLineWidth(10.0f);
   glBegin(GL_LINES);
   glColor3f(0, 0, 0);
-  glLineWidth(7.0);
   glVertex2f(x - 50, y - 50);
   glVertex2f(x + 50, y + 50);
   glVertex2f(x - 50, y + 50);
@@ -38,6 +38,7 @@ void Draw::Draw_X(int x, int y)
 
 void Draw::DrawLines()
 {
+  glLineWidth(4.0f);
   glBegin(GL_LINES);
   glColor3f(0, 0, 0);
 

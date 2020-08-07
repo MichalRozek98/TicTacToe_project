@@ -3,14 +3,16 @@
 
 int main(int argc, char** argv) {
   
+  
   std::cout << "Do you want to be a server (s) or a client (c)? ";
   std::cin >> who;
 
-    if (who == 's')
-      runTcpServer(port);
-    else
-      runTcpClient(port);
-
+  if (who == 's')
+    runTcpServer(port);
+  else
+  {
+    runTcpClient(port);
+  }
   // Wait until the user presses 'enter' key
   /*std::cout << "Press enter to exit..." << std::endl;
   std::cin.ignore(10000, '\n');
@@ -27,7 +29,8 @@ int main(int argc, char** argv) {
   glutReshapeFunc(resize);
   glutMouseFunc(mouse);
   glutMainLoop();
-  
+ 
+
   //ReceiveTheMatix();
   return 0;
 }
