@@ -36,6 +36,17 @@ void Draw::Draw_X(int x, int y)
   glEnd();
 }
 
+void Draw::Draw_Win(int x1, int y1, int x2, int y2)
+{
+  glLineWidth(10.0f);
+  glBegin(GL_LINES);
+  glColor3f(1, 0, 0);
+  glVertex2f(x1, y1);
+  glVertex2f(x2, y2);
+  glColor3f(0, 0, 0);
+  glEnd();
+}
+
 void Draw::DrawLines()
 {
   glLineWidth(4.0f);
