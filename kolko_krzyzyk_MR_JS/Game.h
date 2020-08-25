@@ -19,8 +19,6 @@ bool first_receive = false;
 bool if_is_draw = false;
 
 
-
-
 void X_or_O(int i, int j) {
   if (who == 's') {
     if (winner_looser_matrix[i][j] == -1) {
@@ -212,53 +210,87 @@ void WhoIsTheWinner() {
 
 void mouse(int button, int state, int x, int y) {
 
-  if (button == GLUT_LEFT_BUTTON && state == GLUT_DOWN)
-  {
-    if (!somebody_wins)
+    if (button == GLUT_LEFT_BUTTON && state == GLUT_DOWN)
     {
-      if (x > 40 && (600 - y) > 40 && x < 200 && (600 - y) < 200) {
-        X_or_O(2, 0);
-      }
-      else if (x > 200 && (600 - y) > 40 && x < 400 && (600 - y) < 200) {
-        X_or_O(2, 1);
-      }
-      else if (x > 400 && (600 - y) > 40 && x < 560 && (600 - y) < 200) {
-        X_or_O(2, 2);
-      }
-      else if (x > 40 && (600 - y) > 200 && x < 200 && (600 - y) < 400) {
-        X_or_O(1, 0);
-      }
-      else if (x > 200 && (600 - y) > 200 && x < 400 && (600 - y) < 400) {
-        X_or_O(1, 1);
-      }
-      else if (x > 400 && (600 - y) > 200 && x < 560 && (600 - y) < 400) {
-        X_or_O(1, 2);
-      }
-      else if (x > 40 && (600 - y) > 400 && x < 200 && (600 - y) < 560) {
-        X_or_O(0, 0);
-      }
-      else if (x > 200 && (600 - y) > 400 && x < 400 && (600 - y) < 560) {
-        X_or_O(0, 1);
-      }
-      else if (x > 400 && (600 - y) > 400 && x < 560 && (600 - y) < 560) {
-        X_or_O(0, 2);
+      if (!somebody_wins)
+      {
+        if (x > 40 && (600 - y) > 40 && x < 200 && (600 - y) < 200) {
+          X_or_O(2, 0);
+        }
+        else if (x > 200 && (600 - y) > 40 && x < 400 && (600 - y) < 200) {
+          X_or_O(2, 1);
+        }
+        else if (x > 400 && (600 - y) > 40 && x < 560 && (600 - y) < 200) {
+          X_or_O(2, 2);
+        }
+        else if (x > 40 && (600 - y) > 200 && x < 200 && (600 - y) < 400) {
+          X_or_O(1, 0);
+        }
+        else if (x > 200 && (600 - y) > 200 && x < 400 && (600 - y) < 400) {
+          X_or_O(1, 1);
+        }
+        else if (x > 400 && (600 - y) > 200 && x < 560 && (600 - y) < 400) {
+          X_or_O(1, 2);
+        }
+        else if (x > 40 && (600 - y) > 400 && x < 200 && (600 - y) < 560) {
+          X_or_O(0, 0);
+        }
+        else if (x > 200 && (600 - y) > 400 && x < 400 && (600 - y) < 560) {
+          X_or_O(0, 1);
+        }
+        else if (x > 400 && (600 - y) > 400 && x < 560 && (600 - y) < 560) {
+          X_or_O(0, 2);
+        }
       }
     }
-    if (x > 255 && (600 - y) > 580 && x < 345 && (600 - y) < 600) {
-      init();
-      glutPostRedisplay();
+
+    glFlush();
+    SendTheMatrix();
+    WhoIsTheWinner();
+    if (!somebody_wins && !if_is_draw)
+      ReceiveTheMatix();
+    WhoIsTheWinner();
+    glFlush();
+    glutPostRedisplay();
+
+  if (x > 255 && (600 - y) > 580 && x < 345 && (600 - y) < 600) {
+    glClearColor(1, 1, 0, 0);
+    glClear(GL_COLOR_BUFFER_BIT);
+
+    for (int i = 0; i < 3; ++i) {
+      for (int j = 0; j < 3; ++j) {
+        winner_looser_matrix[i][j] = -1;
+        matrix_help[i][j] = -1;
+      }
+    }
+
+    move = false;
+    somebody_wins = false;
+    first_receive = false;
+    if_is_draw = false;
+    received_client = 0;
+    received_server = 0;
+
+    glutPostRedisplay();
+
+    socket.disconnect();
+
+    if (who == 's')
+    {
+      while (listener.listen(port) != sf::Socket::Done)
+        return;
+
+      while (listener.accept(socket) != sf::Socket::Done)
+        return;
+    }
+    else
+    {
+      while (server == sf::IpAddress::None);
+
+      while (socket.connect(server, port) != sf::Socket::Done)
+        return;
     }
   }
-
-
-  glFlush();
-  SendTheMatrix();
-  WhoIsTheWinner();
-  if (!somebody_wins && !if_is_draw)
-    ReceiveTheMatix();
-  WhoIsTheWinner();
-  glFlush();
-  glutPostRedisplay();
 }
 
 

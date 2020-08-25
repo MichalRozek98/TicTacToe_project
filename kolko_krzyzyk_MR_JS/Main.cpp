@@ -13,11 +13,6 @@ int main(int argc, char** argv) {
   {
     runTcpClient(port);
   }
-  // Wait until the user presses 'enter' key
-  /*std::cout << "Press enter to exit..." << std::endl;
-  std::cin.ignore(10000, '\n');
-  std::cin.ignore(10000, '\n');*/
-
 
   glutInit(&argc, argv);
   //glutInitDisplayMode(GLUT_DOUBLE | GLUT_RGB | GLUT_DEPTH);
@@ -30,7 +25,5 @@ int main(int argc, char** argv) {
   glutMouseFunc(mouse);
   glutMainLoop();
  
-
-  //ReceiveTheMatix();
   return 0;
 }
