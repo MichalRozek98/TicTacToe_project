@@ -3,7 +3,7 @@
 #include <math.h>
 #include <stdlib.h>
 #include "DrawObjects.h"
-#include <SFML/Network.hpp>
+#include "SFML-2.5.1/include/SFML/Network.hpp"
 #include <iostream>
 #include "TCP.h"
 

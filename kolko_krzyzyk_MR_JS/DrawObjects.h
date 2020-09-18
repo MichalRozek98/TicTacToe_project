@@ -1,6 +1,6 @@
 #pragma once
-#include <GL\glew.h>
-#include <GL\freeglut.h>
+#include "glew/include/GL/glew.h"
+#include "freeglut/include/GL/freeglut.h"
 
 class Draw
 {
